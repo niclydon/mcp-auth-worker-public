@@ -1,7 +1,7 @@
 import type { Env } from "./authorize";
 
 /**
- * OB-55555: /health used to report only { status, service, role } — no version, no
+ * /health used to report only { status, service, role } — no version, no
  * sha — so a deployed Worker could not be told apart from any other build of
  * itself, and drift was undefinable. mcp-auth-worker is the canonical
  * authorization server whose /health literal every RS Worker copied, so this is

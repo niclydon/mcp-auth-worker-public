@@ -1,7 +1,7 @@
 import assert from "node:assert/strict";
 import { healthBody } from "../src/health.ts";
 
-// OB-55555: /health reported only { status, service, role } — no version, no sha —
+// /health reported only { status, service, role } — no version, no sha —
 // so a deployed Worker could not be distinguished from any other build of itself
 // and drift was undefinable. mcp-auth-worker is the canonical authorization server
 // whose /health literal every RS Worker copied, so this shape is the fleet

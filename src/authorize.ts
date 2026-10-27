@@ -17,7 +17,7 @@ export interface Env {
   // Set to "1" only for `wrangler dev`, where the CF Access edge is absent and the
   // identity header must be supplied by the caller (the local-flow proof curls it).
   ALLOW_DEV_ACCESS_HEADER?: string;
-  // OB-55555: build-time provenance, injected by scripts/deploy.sh via
+  // Build-time provenance, injected by scripts/deploy.sh via
   // `wrangler deploy --var`. Deliberately NOT literals in wrangler.toml — a
   // hardcoded sha would be a lie the moment anything else deployed, which is the
   // exact failure this exists to fix. Optional because `wrangler dev` sets
@@ -106,7 +106,7 @@ async function completeAuthorizedRequest(
     return oauthErrorResponse(error);
   }
 
-  // OB-27081 H1: every token MUST be audience-bound. The library only enforces audience
+  // Every token MUST be audience-bound. The library only enforces audience
   // when the grant carries a resource (RFC 8707); an authorize request that omits one
   // would mint an UNBOUND token valid against every RS sharing the KV. Reject it so no
   // unbound token can ever exist. Verified safe: 14/14 live grants carry a resource —

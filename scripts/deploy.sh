@@ -19,12 +19,12 @@ set -euo pipefail
 PROJ=$(cd "$(dirname "$0")/.." && pwd)
 cd "$PROJ"
 
-export CLOUDFLARE_API_TOKEN=$(aws --profile secrets --region us-east-1 \
-  secretsmanager get-secret-value --secret-id shared/cloudflare-workers-edit \
+export CLOUDFLARE_API_TOKEN=$(aws --profile your-aws-profile --region your-aws-region \
+  secretsmanager get-secret-value --secret-id your-workers-token-secret \
   --query SecretString --output text \
   | python3 -c "import sys,json; print(json.loads(sys.stdin.read())['api_token'])")
 
-# OB-55555: stamp the deployed Worker with its source commit and deploy time so
+# Stamp the deployed Worker with its source commit and deploy time so
 # /health can report provenance. Passed as build-time vars rather than written
 # into wrangler.toml as literals — a hardcoded sha would be a lie the moment
 # anything else deployed, which is the failure this exists to fix.
