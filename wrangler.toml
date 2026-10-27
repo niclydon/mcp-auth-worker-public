@@ -1,0 +1,22 @@
+name = "mcp-auth-worker"
+main = "src/worker.ts"
+compatibility_date = "2026-06-01"
+compatibility_flags = ["nodejs_compat"]
+account_id = "YOUR_CLOUDFLARE_ACCOUNT_ID"
+
+# Bind hostname → this Worker. mcp-auth.example.com must exist as a DNS record
+# (sentinel A 192.0.2.1, proxied) in your zone before this route binds.
+[[routes]]
+pattern = "mcp-auth.example.com/*"
+zone_name = "example.com"
+
+# Single SHARED OAUTH_KV namespace. This is THE issuer's grant/token store.
+# Every Resource-Server Worker in the fleet binds this SAME namespace id so it
+# can validate mcp-auth-issued opaque tokens (userId:grantId:hash) directly out
+# of the shared store — no re-issuing, no JWT keys. Title: mcp-auth-shared-OAUTH_KV.
+[[kv_namespaces]]
+binding = "OAUTH_KV"
+id = "YOUR_OAUTH_KV_NAMESPACE_ID"
+
+[observability]
+enabled = true

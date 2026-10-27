@@ -1,0 +1,21 @@
+{
+  "name": "mcp-auth-worker",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Single consolidated OAuth 2.1 Authorization Server for the MCP fleet. Login = Cloudflare Access identity (no shared password).",
+  "scripts": {
+    "dev": "wrangler dev",
+    "test": "node --experimental-strip-types scripts/authorize.test.ts && node --experimental-strip-types scripts/health.test.ts",
+    "typecheck": "tsc --noEmit",
+    "deploy": "wrangler deploy",
+    "tail": "wrangler tail"
+  },
+  "devDependencies": {
+    "@cloudflare/workers-types": "^4.20260101.0",
+    "typescript": "^5.6.0",
+    "wrangler": "^3.95.0"
+  },
+  "dependencies": {
+    "@cloudflare/workers-oauth-provider": "^0.4.0"
+  }
+}

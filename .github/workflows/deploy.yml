@@ -1,0 +1,62 @@
+name: deploy
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: mcp-auth-worker-deploy
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - run: npm ci
+      - run: npm test
+      - run: npm run typecheck
+
+      - name: Deploy authorization server
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          GIT_COMMIT: ${{ github.sha }}
+        run: |
+          set -euo pipefail
+          test -n "${CLOUDFLARE_API_TOKEN:-}"
+          deployed_at="$(date -u +%Y-%m-%dT%H:%M:%SZ)"
+          npx wrangler deploy \
+            --var "GIT_COMMIT:${GIT_COMMIT}" \
+            --var "DEPLOYED_AT:${deployed_at}"
+
+      - name: Verify authorization and resource servers
+        env:
+          EXPECTED_COMMIT: ${{ github.sha }}
+        run: |
+          set -euo pipefail
+          health_file="$(mktemp)"
+          trap 'rm -f "$health_file"' EXIT
+
+          for attempt in {1..12}; do
+            if curl -fsS https://mcp-auth.example.com/health -o "$health_file" &&
+              jq -e --arg sha "$EXPECTED_COMMIT" '.git_commit == $sha' "$health_file" >/dev/null; then
+              break
+            fi
+
+            if [[ "$attempt" -eq 12 ]]; then
+              echo "mcp-auth health did not report the deployed commit" >&2
+              exit 1
+            fi
+            sleep 5
+          done
+
+          curl -fsS https://resource.example.com/health >/dev/null
