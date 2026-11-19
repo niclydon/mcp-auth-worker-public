@@ -1,5 +1,11 @@
 # Changes
 
+## 2026-11-19
+
+- Pair Wrangler 4.155.0 with Workers types 5.20261029.1, satisfying its
+  optional v5 peer requirement so a clean npm install can validate the
+  upgrade without bypassing dependency checks.
+
 ## 2026-09-08
 
 - Added a manual-only GitHub Actions deployment workflow for the fleet OAuth
